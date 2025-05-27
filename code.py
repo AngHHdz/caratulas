@@ -34,6 +34,16 @@ st.markdown("""
         color:#34495e;
         margin-bottom:5px;
     }
+    .header-section {
+        font-weight: bold;
+        color: white;
+        background-color: #34495e;
+        padding: 10px;
+        margin-bottom: 10px;
+        text-align: center;
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -56,11 +66,8 @@ if not valid and vin_input.strip() != "":
     st.error("Error: Cada código VIN debe tener exactamente 17 caracteres.")
     
 def generar_tabla_html(vins, viaje, buque):
-    # Construye tabla estilo excel.
-    # Si no hay VIAJE o BUQUE, poner "-"
     viaje = viaje if viaje.strip() != "" else "-"
     buque = buque if buque.strip() != "" else "-"
-    # Hasta 12 filas
     rows_html = ""
     for i in range(12):
         vin = vins[i] if i < len(vins) else "-"
@@ -79,15 +86,9 @@ def generar_tabla_html(vins, viaje, buque):
         </tr>
         """
     html = f"""
-    <div style="font-weight:bold; color:#34495e; font-size:24px; margin-bottom:10px; text-align:center;">
-        DOCUMENTACIÓN / PLANEACIÓN
-    </div>
-    <div style="font-weight:bold; background:#34495e; color:#fff; font-size:18px; text-align:center; padding:6px; margin-bottom:5px;">
-        PARA: JACKCOPPER
-    </div>
-    <div style="font-weight:bold; font-size:18px; letter-spacing: 6px; text-align:center; margin-bottom:10px;">
-        T R A N S P O R T I S T A
-    </div>
+    <div class="header-section">DOCUMENTACIÓN / PLANEACIÓN</div>
+    <div class="header-section">PARA: JACKCOPPER</div>
+    <div class="header-section">T R A N S P O R T I S T A</div>
     <table>
         <thead>
             <tr style="background:#d7d7d7;">
@@ -115,28 +116,26 @@ if vin_input.strip():
 else:
     st.info("Ingrese los VIN para que se genere el formato.")
 
-# Función para generar PDF usando fpdf
 def generar_pdf(vins, viaje, buque):
-    pdf = FPDF(orientation = 'L', unit = 'mm', format = 'A4')
+    pdf = FPDF(orientation='L', unit='mm', format='A4')
     pdf.add_page()
     pdf.set_font("Arial", "B", 18)
-    pdf.set_text_color(52,73,94)
+    pdf.set_text_color(52, 73, 94)
     pdf.cell(0, 10, "FORMATO DE CARÁTULA - Registro de Unidades a Transportar", ln=1, align='C')
 
     pdf.ln(5)
-    pdf.set_fill_color(52,73,94)
+    pdf.set_fill_color(52, 73, 94)
     pdf.set_text_color(255, 255, 255)
     pdf.set_font("Arial", "B", 14)
     pdf.cell(0, 10, "DOCUMENTACIÓN / PLANEACIÓN", ln=1, align='C', fill=True)
 
-    pdf.set_fill_color(52,73,94)
+    pdf.set_fill_color(52, 73, 94)
     pdf.cell(0, 10, "PARA: JACKCOPPER", ln=1, align='C', fill=True)
 
-    pdf.set_text_color(52,73,94)
+    pdf.set_text_color(52, 73, 94)
     pdf.set_font("Arial", "B", 14)
     pdf.cell(0, 10, "T R A N S P O R T I S T A", ln=1, align='C')
 
-    # Encabezados tabla
     pdf.set_font("Arial", "B", 12)
     pdf.set_fill_color(215, 215, 215)
     col_widths = [25, 40, 60, 30, 45, 30, 25, 40]
@@ -145,7 +144,6 @@ def generar_pdf(vins, viaje, buque):
         pdf.cell(col_widths[i], 10, headers[i], border=1, align='C', fill=True)
     pdf.ln()
 
-    # Filas
     pdf.set_font("Arial", "", 11)
     for i in range(12):
         vin = vins[i] if i < len(vins) else "-"
@@ -164,4 +162,3 @@ if st.button("Descargar PDF"):
     else:
         pdf_bytes = generar_pdf(vins, viaje_input, buque_input)
         st.download_button("Descargar PDF generado", data=pdf_bytes, file_name="formato_carátula.pdf", mime="application/pdf")
-
